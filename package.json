@@ -1,0 +1,25 @@
+{
+  "name": "culdechouette",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "nodemon": "nodemon -x npm start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "config": "^3.3.2",
+    "discord.js": "^12.4.1",
+    "express": "^4.16.4",
+    "request": "^2.88.0",
+    "uuid": "^8.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
+  }
+}
