@@ -1,6 +1,7 @@
 
-const { isWhiteListGuild } = require('./middlewares/guilds.js');
 const { includesOneOf } = require('./secondary/oneOf.js');
+
+const culDeChouette = require('./culDeChouette/culDeChouetteMsgHandler.js');
 
 const msgHandler = (msg) => {
   // IN EVERY CASES
@@ -22,9 +23,7 @@ const msgHandler = (msg) => {
       });
     }
 
-    // GUILD MIDDLEWARES
-    //  || msg.author.id == process.env.ADMIN
-    if (msg.guild && isWhiteListGuild(msg.guild.id)) { }
+    culDeChouette.msgHandler(msg);
 
   }
 };
