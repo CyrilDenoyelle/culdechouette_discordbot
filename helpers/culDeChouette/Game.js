@@ -2,6 +2,7 @@ const { v4: uuid } = require('uuid');
 const { quickOrder, orderGen } = require('./order.js');
 
 const oneDice6 = () => Math.floor(Math.random() * 6) + 1;
+const nDice = n => Array.from({ length: n }, () => oneDice6());
 
 class Game {
   constructor({ creator, channelId }) {
@@ -69,22 +70,23 @@ class Game {
         const { done, value } = this.ordering.next({ player, roll });
         this.ordered = done;
 
-        return done
-          ? {
-            msg: `${player.name} a fait ${roll}... Et la game demare! l'ordre de jeu sera: ${value.map(p => p.name).join(', ')}. GLHF`
-          }
-          : {
-            msg: `${player.name} a fait ${roll}`
-          };
+        if (!done) {
+          return { msg: `${player.name} a fait ${roll}` };
+        }
+
+        this.players = value; // set the new order of players
+        return {
+          msg: `${player.name} a fait ${roll}... Et la game demare! l'ordre de jeu sera: ${value.map(p => p.name).join(', ')}. GLHF`
+        };
 
       }
 
       // game turn code goes here
-
-      return { msg: 'normal round' };
+      const roll = nDice(3);
+      return { msg: `${player.name} a fait ${roll.join(', ')}` };
     }
 
-    return { error: `Déso ${pl.id}, inscriptions fermées` };
+    return { error: `${pl.name} n'est pas dans la game}` };
   }
 }
 
