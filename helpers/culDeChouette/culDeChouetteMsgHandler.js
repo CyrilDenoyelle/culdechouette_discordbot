@@ -1,15 +1,21 @@
 
 const Game = require('./Game.js');
 
-const gameHandler = (res, channel) => {
-  const { msg, error } = res;
+const gameHandler = (res, channel) => { // takes game response object and channel where it need to send message
+  if (res) {
+    const { msg, error } = res;
 
-  if (error) { // if there is an error
-    channel.send(`Ousp: ${error}`);
-  } else if (msg) { // if there is no error and a message
-    channel.send(msg);
+    if (error) { // if there is an error
+      channel.send(`Ousp: ${error}`);
+    } else if (msg) { // if there is no error and a message
+      channel.send(msg);
+    }
+
+    // in case there is neither msg nor the error
+  } else {
+    // in case there is no response
+    console.log(`gameHandler => "res is ${res}"`);
   }
-  // in case there is nothing, do nothing
 };
 
 const games = [];
