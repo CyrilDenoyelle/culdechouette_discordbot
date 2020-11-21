@@ -42,7 +42,7 @@ class Game {
       if (fast) { // if option fast is true
         this.players = quickOrder([...this.players]);
         this.ordered = true;
-        return { msg: `l'ordre des joueurs sera: ${this.players.map(p => p.id).join(', ')}` };
+        return { msg: `l'ordre des joueurs sera: ${this.players.map(p => p.name).join(', ')}. GLHF` };
       }
 
       // if fast is false or undefined
@@ -64,7 +64,7 @@ class Game {
 
     if (player) {
 
-      // ordering turn
+      // ordering round
       if (!this.ordered) {
         const roll = oneDice6();
         const { done, value } = this.ordering.next({ player, roll });
@@ -81,12 +81,13 @@ class Game {
 
       }
 
-      // game turn code goes here
+      // game's normal round code goes here
+
       const roll = nDice(3);
       return { msg: `${player.name} a fait ${roll.join(', ')}` };
     }
 
-    return { error: `${pl.name} n'est pas dans la game}` };
+    return { error: `${pl.name} n'est pas dans la game` };
   }
 }
 
