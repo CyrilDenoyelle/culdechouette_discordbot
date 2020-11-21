@@ -45,16 +45,28 @@ const msgHandler = (msg) => {
 
         msg.channel.send('Inscription a reaction')
           .then(async (m) => {
-            await m.react('✅'); // https://emojipedia.org/thumbs-up/
+            // await m.react('✅'); // https://emojipedia.org/thumbs-up/
+            game.inscriptionMessageId = m.id;
             return m;
-          }).then(m => m.awaitReactions((reaction, user) => {
-            console.log('reaction', user.username);
+          });
 
-            if (user.id !== process.env.SELFT_ID && reaction.emoji.name === '✅') {
-              gameHandler(game.register({ id: user.id, name: user.username }), msg.channel);
-            }
+        // if discord.js fixes onReactions or we found WTF happens
+        // .then(() => {
 
-          }, { max: 100, time: 600000, errors: ['time'] }));
+        //   const filter = (reaction, user) => {
+        //     console.log({ reaction, user });
+        //     console.log(user.id !== process.env.SELFT_ID);
+        //     console.log(reaction.emoji.name === '✅');
+        //     return user.id !== process.env.SELFT_ID && reaction.emoji.name === '✅';
+        //   };
+        //   m.awaitReactions(filter, { max: 100, time: 20000, errors: ['time'] })
+        //     .then((r) => {
+        //       console.log('r', r);
+        //       // gameHandler(game.register({ id: user.id, name: user }), msg.channel);
+        //     }).catch((err) => {
+        //       console.log('err', err);
+        //     });
+        // });
 
       }
     }
@@ -64,7 +76,20 @@ const msgHandler = (msg) => {
 
   if (game) {
 
+    if (msg.content === 'inscription') {
+      gameHandler(game.register(player), msg.channel);
+    }
+
     if (msg.content === 'start') {
+
+      // console.log(game.inscriptionMessageId);
+      // msg.channel.messages.fetch(game.inscriptionMessageId)
+      //   .then((inscriptionMessage) => {
+      //     const reactions = inscriptionMessage.reactions.cache.get('✅');
+      //     console.log('reactions', reactions);
+      //   });
+
+      // gameHandler(game.register({ id: user.id, name: user }), msg.channel);
       gameHandler(game.start({ player }), msg.channel);
     }
 
