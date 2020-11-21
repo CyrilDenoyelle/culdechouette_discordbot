@@ -14,16 +14,15 @@ const quickOrder = (players) => {
   while (players.length > 0) { // while there is players in the list
     const player = players[0];
 
-    const sameRoll = players.filter(pl => pl.roll === player.roll);
+    const sameRoll = players.filter(p => p.roll === player.roll);
     if (sameRoll.length >= 2) {
-      const o = quickOrder(sameRoll);
+      const order = quickOrder(sameRoll);
 
-      o.forEach((p) => {
+      order.forEach((p) => {
         delete p.roll;
         players.shift();
+        result.push(p); // pushs each ordered players
       });
-
-      result.push(...o); // pushs each ordered players
 
     } else {
       delete players[0].roll;
