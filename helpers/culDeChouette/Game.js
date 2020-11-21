@@ -4,29 +4,38 @@ const { quickOrder, orderGen } = require('./order.js');
 const oneDice6 = () => Math.floor(Math.random() * 6) + 1;
 
 class Game {
-  constructor(creator) {
+  constructor({ creator, channelId }) {
     this.id = uuid();
     this.players = []; // prepares players list
     this.started = false; // the game hasn't started
     this.creator = creator;
+    this.channelId = channelId;
 
     console.log('game crée');
-    this.register(creator); // registers the game creator
+    this.players.push(creator); // registers the game creator
   }
 
-  register(playerId) { // registers the given player
+  register(player) { // registers the given player
     if (!this.started) {
-      this.players.push({ id: playerId });
-      console.log('inscription', { id: playerId });
-      return { msg: `inscription id: ${playerId}` };
+
+      if (this.creator.id === player.id) {
+        return { error: `${player.name} est creator donc n'as pas besoin de s'inscrire` };
+      }
+      if (this.players.find(p => p.id === player.id)) {
+        return { error: `${player.name} est deja inscrit` };
+      }
+
+      this.players.push(player);
+      console.log('inscription', player);
+      return { msg: `${player.name} s'est inscrit` };
     }
-    return { error: `Déso ${playerId}, les inscriptions sont fermées` };
+    return { error: `${player.name}, les inscriptions sont fermées` };
   }
 
-  start({ id, fast }) { // starts the game: id need to be the creator id
-    if (this.started) return { msg: 'already started' };
+  start({ player, fast }) { // starts the game: player.id needs to be the creator id
+    if (this.started) return { error: 'game already started' };
 
-    if (id === this.creator) { // if the player starting the game is the creator
+    if (player.id === this.creator.id) { // if the player starting the game is the creator
       this.started = true;
 
       if (fast) { // if option fast is true
@@ -42,12 +51,12 @@ class Game {
       return { msg: 'Les joueurs font tous un roll' };
     }
 
-    return { error: `${id} n'est pas le createur (uniquement ${this.creator} peut commencer la game)` };
+    return { error: `${player.name} n'est pas le createur (uniquement ${this.creator.name} peut commencer la game)` };
   }
 
-  roll(pl) { // starts a roll the dice.s
+  roll({ player: pl }) { // rolls the dice.s
 
-    if (!this.started) return { error: 'la game n\'as pas start' };
+    if (!this.started) return { error: 'la game n\'as pas start (si tout les joueurs sont inscrits le createur de la game doit ecrire "start")' };
 
     const { players } = this;
     const player = players.find(p => p.id === pl.id);
@@ -56,10 +65,18 @@ class Game {
 
       // ordering turn
       if (!this.ordered) {
-        const { done, value } = this.ordering.next({ player, roll: oneDice6() });
+        const roll = oneDice6();
+        const { done, value } = this.ordering.next({ player, roll });
         this.ordered = done;
 
-        return done ? { msg: 'la game demare lul' } : { msg: value };
+        return done
+          ? {
+            msg: `${player.name} a fait ${roll}... Et la game demare! l'ordre de jeu sera: ${value.map(p => p.name).join(', ')}. GLHF`
+          }
+          : {
+            msg: `${player.name} a fait ${roll}`
+          };
+
       }
 
       // game turn code goes here
@@ -70,49 +87,5 @@ class Game {
     return { error: `Déso ${pl.id}, inscriptions fermées` };
   }
 }
-
-// test game
-const game = new Game('1');
-game.register('2');
-game.register('3');
-game.register('4');
-game.register('5');
-game.register('6');
-const players = [
-  { id: '1' },
-  { id: '2' },
-  { id: '3' },
-  { id: '4' },
-  { id: '5' },
-  { id: '6' }
-];
-
-// game.roll('2');
-
-// game.start('1');
-const { msg: msgStart, error: errorStart } = game.start({ id: '1' });
-msgStart ? console.log('msgStart', msgStart) : null;
-errorStart ? console.log('errorStart', errorStart) : null;
-
-// // game.start('4');
-
-// // game.register('5');
-// // game.roll('5');
-
-
-let playerIndex = 0;
-while (!game.ordered) {
-  // tant que les joueurs ne sont pas mis dans l'ordre croissant
-  // par rapport a leurs rolls, sans egalitee
-
-  const { msg, error } = game.roll(players[playerIndex]);
-  msg ? console.log('msg', msg) : null;
-  error ? console.log('error', error) : null;
-
-  // playerIndex = playerIndex <= 0 ? players.length - 1 : playerIndex - 1;
-  playerIndex = playerIndex >= players.length - 1 ? 0 : playerIndex + 1;
-}
-
-console.log('game.ordered', game.ordered);
 
 module.exports = Game;
