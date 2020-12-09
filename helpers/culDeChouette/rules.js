@@ -36,9 +36,7 @@ const suite = (dices) => {
   return dices[0] === dices[1] - 1 && dices[1] === dices[2] - 1;
 };
 
-// Neant Rule: None of the precedent rules are triggered
-const neant = dices => !(culDeChouette(dices) || chouette(dices) || velute(dices) || suite(dices));
-
+// Chouette Velute Rule: if 2 equal dices are the sum of the third
 const chouetteVelute = (dices) => {
   if (chouette(dices) && velute(dices)) {
     return velute(dices);
@@ -46,6 +44,7 @@ const chouetteVelute = (dices) => {
   return false;
 };
 
+// Suite Velute Rule: If the dices are equal to 1, 2 and 3
 const suiteVelute = (dices) => {
   if (suite(dices) && velute(dices)) {
     return velute(dices);
@@ -53,25 +52,48 @@ const suiteVelute = (dices) => {
   return false;
 };
 
+// Contains a function and associated template for each rules
 const rules = [
-  chouetteVelute,
-  culDeChouette,
-  chouette,
-  suiteVelute,
-  suite,
-  velute
+  {
+    function: chouetteVelute,
+    template: dice => `Chouette velute de ${dice}`
+  },
+  {
+    function: culDeChouette,
+    template: dice => `Cul de chouette de ${dice}`
+  },
+  {
+    function: chouette,
+    template: dice => `Chouette de ${dice}`
+  },
+  {
+    function: suiteVelute,
+    template: dice => `Suite velute de ${dice}`
+  },
+  {
+    function: suite,
+    template: () => 'Suite'
+  },
+  {
+    function: velute,
+    template: dice => `Velute de ${dice}`
+  }
 ];
 
+// Takes input:dices (ex: [6, 6, 6]), output: 'Cul de chouette de 6'
 const rulesHandler = (dices) => {
 
-  rules.forEach((rule) => {
-    const ruleResult = rule(dices);
+  let result = 'neant';
+  for (let i = 0; i < rules.length; i += 1) {
+    const rule = rules[i];
+    const ruleResult = rule.function(dices);
     if (ruleResult) {
-      return `${rule} de ${ruleResult}`;
+      result = rule.template(ruleResult);
+      break;
     }
-    return false;
-  });
-  return 'neant';
+  }
+  return result;
+
 };
 
 module.exports = rulesHandler;
