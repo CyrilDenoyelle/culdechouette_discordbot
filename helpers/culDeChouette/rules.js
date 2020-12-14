@@ -9,15 +9,9 @@ const culDeChouette = (dices) => {
 
 // Chouette Rule: if 2 dices are equals
 const chouette = (dices) => {
-  if (dices[0] === dices[1]) {
-    return dices[0];
-  }
-  if (dices[1] === dices[2]) {
-    return dices[1];
-  }
-  if (dices[2] === dices[0]) {
-    return dices[2];
-  }
+  if (dices[0] === dices[1]) return dices[0];
+  if (dices[1] === dices[2]) return dices[1];
+  if (dices[2] === dices[0]) return dices[2];
   return false;
 };
 
@@ -38,17 +32,17 @@ const suite = (dices) => {
 
 // Chouette Velute Rule: if 2 equal dices are the sum of the third
 const chouetteVelute = (dices) => {
-  if (chouette(dices) && velute(dices)) {
-    return velute(dices);
-  }
+  const isChouette = chouette(dices);
+  const isVelute = velute(dices);
+  if (isChouette && isVelute) return isVelute;
   return false;
 };
 
 // Suite Velute Rule: If the dices are equal to 1, 2 and 3
 const suiteVelute = (dices) => {
-  if (suite(dices) && velute(dices)) {
-    return velute(dices);
-  }
+  const isSuite = suite(dices);
+  const isVelute = velute(dices);
+  if (isSuite && isVelute) return isVelute;
   return false;
 };
 
